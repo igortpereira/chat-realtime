@@ -8,15 +8,22 @@ const io = new Server(server);
 
 app.use(express.static('public'));
 
+let messages = [];
+
 io.on('connection', (socket) => {
-	console.log('Novo usuário conectado');
+	console.log(`Usuário ${socket.id} conectado`);
+
+	if(messages.length > 0){
+		socket.emit('fetch messages', messages);
+	}
 	
-	socket.on('chat message', (msg) => {
-		io.emit('chat message', msg);
+	socket.on('chat message', (message) => {
+		io.emit('chat message', message);
+		messages.push(message);
 	});
 	
 	socket.on('disconnect', () => {
-		console.log('Usuário desconectado');
+		console.log(`Usuário ${socket.id} desconectado`);
 	});
 });
 
